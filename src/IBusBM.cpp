@@ -80,11 +80,32 @@ extern "C" {
     Checksum: DA F3 -> calculated by adding up all previous bytes, total must be FFFF
  */
 
+void IBusBM::end()
+{
+#if defined(_VARIANT_ARDUINO_STM32_)
+  // see https://github.com/stm32duino/wiki/wiki/HardwareTimer-library
+  stimer_t->pause();
+  delete stimer_t;
+  stimer_t = NULL;
+#endif
+}
+
+IBusBM::IBusBM()
+{
+  // nothing
+}
+
+IBusBM::~IBusBM()
+{
+  this->stream->end();
+  this->IBusBMnext = NULL;
+  this->stream = NULL;
+}
 
 #if defined(_VARIANT_ARDUINO_STM32_)
-void IBusBM::begin(HardwareSerial &serial, TIM_TypeDef * timerid, int8_t rxPin, int8_t txPin) {
+    void IBusBM::begin(HardwareSerial &serial, TIM_TypeDef *timerid, int8_t rxPin, int8_t txPin) {
 #else
-void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin) {
+    void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin) {
 #endif
 
   #ifdef ARDUINO_ARCH_ESP32
@@ -121,7 +142,7 @@ void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t 
         timerAlarmEnable(timer);
       #elif defined(_VARIANT_ARDUINO_STM32_)
         // see https://github.com/stm32duino/wiki/wiki/HardwareTimer-library
-        HardwareTimer *stimer_t = new HardwareTimer(timerid);
+        stimer_t = new HardwareTimer(timerid);
         stimer_t->setOverflow(1000, HERTZ_FORMAT); // 1000 Hz
         stimer_t->attachInterrupt(onTimer);
         stimer_t->resume();

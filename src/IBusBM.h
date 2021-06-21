@@ -60,9 +60,20 @@ public:
   volatile uint8_t cnt_poll; // count received number of sensor poll messages
   volatile uint8_t cnt_sensor; // count times a sensor value has been sent back
   volatile uint8_t cnt_rec; // count received number of servo messages
-  
+
+  void end();
+  IBusBM(void);
+  ~IBusBM();
+
 private:
-  enum State {GET_LENGTH, GET_DATA, GET_CHKSUML, GET_CHKSUMH, DISCARD};
+  enum State
+  {
+    GET_LENGTH,
+    GET_DATA,
+    GET_CHKSUML,
+    GET_CHKSUMH,
+    DISCARD
+  };
 
   static const uint8_t PROTOCOL_LENGTH = 0x20;
   static const uint8_t PROTOCOL_OVERHEAD = 3; // packet is <len><cmd><data....><chkl><chkh>, overhead=cmd+chk bytes
@@ -73,7 +84,8 @@ private:
   static const uint8_t PROTOCOL_COMMAND_TYPE = 0x90;     // Command discover sensor (lowest 4 bits are sensor)
   static const uint8_t PROTOCOL_COMMAND_VALUE = 0xA0;    // Command send sensor data (lowest 4 bits are sensor)
   static const uint8_t SENSORMAX = 10; // Max number of sensors
-  
+
+  HardwareTimer *stimer_t;          // 
   uint8_t state;                    // state machine state for iBUS protocol
   HardwareSerial *stream;           // serial port
   uint32_t last;                    // milis() of prior message
