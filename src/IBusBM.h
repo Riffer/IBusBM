@@ -18,6 +18,9 @@
 #include "HardwareSerial.h"
 #endif
 
+#if defined(ARDUINO_ARCH_RP2040)
+#endif
+
 // if you have an opentx transciever you can add additional sensor types here.
 // see https://github.com/cleanflight/cleanflight/blob/7cd417959b3cb605aa574fc8c0f16759943527ef/src/main/telemetry/ibus_shared.h
 // below the values supported by the Turnigy FS-MT6 transceiver
@@ -32,8 +35,8 @@
 #if defined(ARDUINO_ARCH_MBED)
 #define HardwareSerial arduino::HardwareSerial
 #else
-  #if !defined(ARDUINO_ARCH_MEGAAVR)
-class HardwareSerial;
+  #if !defined(ARDUINO_ARCH_MEGAAVR) && !defined(ARDUINO_ARCH_RP2040)
+  class HardwareSerial;
   #endif
 #endif
 class Stream;
@@ -49,7 +52,7 @@ public:
   void begin(HardwareSerial &serial, TIM_TypeDef * timerid=TIM1, int8_t rxPin=-1, int8_t txPin=-1);
 #else
   #define IBUSBM_NOTIMER -1 // no timer interrupt used
-  void begin(HardwareSerial &serial, int8_t timerid=0, int8_t rxPin=-1, int8_t txPin=-1);
+  void begin(HardwareSerial &serial, int8_t timerid=IBUSBM_NOTIMER, int8_t rxPin=-1, int8_t txPin=-1);
 #endif
   uint16_t readChannel(uint8_t channelNr); // read servo channel 0..9
   uint8_t addSensor(uint8_t type, uint8_t len=2); // add sensor type and data length (2 or 4), returns address
@@ -85,7 +88,9 @@ private:
   static const uint8_t PROTOCOL_COMMAND_VALUE = 0xA0;    // Command send sensor data (lowest 4 bits are sensor)
   static const uint8_t SENSORMAX = 10; // Max number of sensors
 
-  HardwareTimer *stimer_t;          // 
+  #if !(IBUSBM_NOTIMER == -1)
+    HardwareTimer *stimer_t;          // 
+  #endif 
   uint8_t state;                    // state machine state for iBUS protocol
   HardwareSerial *stream;           // serial port
   uint32_t last;                    // milis() of prior message
