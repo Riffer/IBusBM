@@ -103,16 +103,18 @@ IBusBM::~IBusBM()
 }
 
 #if defined(_VARIANT_ARDUINO_STM32_)
-    void IBusBM::begin(HardwareSerial &serial, TIM_TypeDef *timerid, int8_t rxPin, int8_t txPin) {
+    void IBusBM::begin(HardwareSerial &serial, TIM_TypeDef *timerid, int8_t rxPin, int8_t txPin) 
+#elif defined(ARDUINO_ARCH_RP2040)
+void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin)
 #else
-    void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin) {
+void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin)
 #endif
-
-  #ifdef ARDUINO_ARCH_ESP32
-    serial.begin(115200, SERIAL_8N1, rxPin, txPin);
-  #else
-    serial.begin(115200, SERIAL_8N1);
-  #endif
+    {
+#ifdef ARDUINO_ARCH_ESP32
+  serial.begin(115200, SERIAL_8N1, rxPin, txPin);
+#else
+  serial.begin(115200, SERIAL_8N1);
+#endif
 
   this->stream = &serial;
   this->state = DISCARD;
@@ -171,8 +173,8 @@ IBusBM::~IBusBM()
       #endif
     #endif
   }
-  IBusBMfirst = this; 
-}
+  IBusBMfirst = this;
+    }
 
 // called from timer interrupt or mannually by user (if IBUSBM_NOTIMER set in begin())
 void IBusBM::loop(void) {
