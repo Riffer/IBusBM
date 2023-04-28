@@ -55,7 +55,7 @@ public:
 #elif defined(ARDUINO_ARCH_RP2040)
 #define IBUSBM_NOTIMER -1 // no timer interrupt used
   //void begin(HardwareSerial &serial, int8_t timerid = IBUSBM_NOTIMER, int8_t rxPin = -1, int8_t txPin = -1);
-  void begin(SerialPIO &serial, int8_t timerid = IBUSBM_NOTIMER, int8_t rxPin = -1, int8_t txPin = -1);
+  void begin(HardwareSerial &serial, int8_t timerid = IBUSBM_NOTIMER, int8_t rxPin = -1, int8_t txPin = -1);
 #else
 #define IBUSBM_NOTIMER -1 // no timer interrupt used
   void begin(HardwareSerial &serial, int8_t timerid=IBUSBM_NOTIMER, int8_t rxPin=-1, int8_t txPin=-1);

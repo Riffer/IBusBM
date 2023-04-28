@@ -102,13 +102,15 @@ IBusBM::~IBusBM()
   this->stream = NULL;
 }
 
+
+
 #if defined(_VARIANT_ARDUINO_STM32_)
     void IBusBM::begin(HardwareSerial &serial, TIM_TypeDef *timerid, int8_t rxPin, int8_t txPin) 
 #elif defined(ARDUINO_ARCH_RP2040)
-//void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin)
-void IBusBM::begin(SerialPIO &serial, int8_t timerid, int8_t rxPin, int8_t txPin)
-#else
+    // void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin)
 void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin)
+#else
+    void IBusBM::begin(HardwareSerial &serial, int8_t timerid, int8_t rxPin, int8_t txPin)
 #endif
     {
 #ifdef ARDUINO_ARCH_ESP32
